@@ -11,7 +11,8 @@ export default function Home() {
       <br />
       <h2>Course Assignment Links : </h2>
       <ul>
-        <li> <Link href="./week-2/" className={linkStyles}>Week 2 - Link To My Week 2 Assignment</Link> </li>
+        <li> <Link href="./week-2/" className={linkStyles}>Week 2</Link> </li>
+        <li><Link href="./week-3" className={linkStyles}>Week 3</Link></li>
         </ul>
     </main>
   );
