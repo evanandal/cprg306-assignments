@@ -1,10 +1,12 @@
+import Link from "next/link";
 import ItemList from "./item-list";
 
 export default function Page() {
     return (
-        <main className="m-5">
-            <h1 className="text-3xl font-bold text-black-800 m-2">Shopping List</h1>
+        <main className="px-5 py-3 bg-slate-950">
+            <h1 className="text-3xl font-bold text-white">Shopping List</h1>
             <ItemList />
+            <Link href="/"className="text-teal-400 underline hover:text-teal-200">Home</Link>
         </main>
     );
 }

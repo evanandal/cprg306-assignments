@@ -2,80 +2,81 @@
 
 import { useState } from "react";
 import Item from "./item";
-import itemData from "./items.json"
+import ItemData from "./items.json";
 
 export default function ItemList() {
+  let itemArray = ItemData.map((item) => ({ ...item }));
 
-    let categoriesOption = ["Produce", "Dairy", "Bakery", "Meat", "Frozen Foods", "Canned Goods", "Dry Goods", "Beverages", "Snacks", "Household", "Other"];
-    
-    let [sortBy, setSortBy] = useState("name");
-    let buttonNameStyle = "bg-teal-500 text-white p-1 m-2";
-    let buttonCategoryStyle = "bg-slate-400 text-white p-1 m-2";
-    let buttonGroupStyle = "bg-slate-400 text-white p-1 m-2";
+  let [sortBy, setSortBy] = useState("name");
 
-    if (sortBy == "name") {
-        buttonNameStyle = "bg-teal-500 text-white p-1 m-2";
-        buttonCategoryStyle = "bg-slate-400 text-white p-1 m-2";
-        buttonGroupStyle = "bg-slate-400 text-white p-1 m-2";
-    };
-    if (sortBy == "category") {
-        buttonNameStyle = "bg-slate-400 text-white p-1 m-2";
-        buttonCategoryStyle = "bg-teal-500 text-white p-1 m-2";
-        buttonGroupStyle = "bg-slate-400 text-white p-1 m-2";
-    };
-    if (sortBy == "group") {
-        buttonNameStyle = "bg-slate-400 text-white p-1 m-2";
-        buttonCategoryStyle = "bg-slate-400 text-white p-1 m-2";
-        buttonGroupStyle = "bg-teal-500 text-white p-1 m-2";
-    };
+  const handleSortBy = (event) => setSortBy(event.target.value);
 
-    const handleSortByName = () => setSortBy("name");
-    const handleSortbyCategory = () => setSortBy("category");
-    const handleSortByGroup = () => setSortBy("group");
-    
-    if (sortBy != "group") 
-        itemData.sort( (a,b) => {
-            let nameA = a[sortBy].toUpperCase();
-            let nameB = b[sortBy].toUpperCase();
-            if (nameA < nameB) return -1;
-            if (nameA > nameB) return 1;
-            return 0;
-        });
+  itemArray = itemArray.sort((a, b) => {
+    let sort = sortBy;
+    if (sortBy == "grouped category") {
+      sort = "category";
+    }
+    let itemA = a[sort].toUpperCase();
+    let itemB = b[sort].toUpperCase();
+    if (itemA < itemB) return -1;
+    if (itemA > itemB) return 1;
+    return 0;
+  });
 
-    categoriesOption = categoriesOption.sort((a, b) => {
-        let nameA = a.toUpperCase();
-        let nameB = b.toUpperCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-    });
+  let groupedItems = itemArray.reduce((accumulator, item) => {
+    const category = item.category;
+    if (!accumulator[category]) {
+      accumulator[category] = [];
+    }
+    accumulator[category].push(item);
+    return accumulator;
+  }, {});
 
-    return(
-        <section>
-            <div>
-                <label className="text-black font-bold">Sort By: </label>
-                <button className={buttonNameStyle} onClick={handleSortByName}>Name</button>
-                <button className={buttonCategoryStyle} onClick={handleSortbyCategory}>Category</button>
-                <button className={buttonGroupStyle} onClick={handleSortByGroup}>Grouped Category</button>
+  return (
+    <section>
+      <div>
+        <label className="text-white">Sort by:</label>
+        <button
+          className="bg-amber-800 text-white w-30 h-8 m-3 disabled:bg-amber-600"
+          type="button"
+          value="name"
+          onClick={handleSortBy}
+          disabled={sortBy == "name"}
+        >
+          Name
+        </button>
+        <button
+          className="bg-amber-800 text-white w-30 h-8 m-3 disabled:bg-amber-600"
+          type="button"
+          value="category"
+          onClick={handleSortBy}
+          disabled={sortBy == "category"}
+        >
+          Category
+        </button>
+        <button
+          className="bg-amber-800 text-white w-30 h-14 m-3 disabled:bg-amber-600"
+          type="button"
+          value="grouped category"
+          onClick={handleSortBy}
+          disabled={sortBy == "grouped category"}
+        >
+          Grouped Category
+        </button>
+      </div>
+      <div>
+        {sortBy === "grouped category" &&
+          Object.entries(groupedItems).map(([category, items]) => (
+            <div key={category}>
+              <h2 className="text-2xl capitalize text-white">{category}</h2>
+              {items.map((item) => (
+                <Item key={item.id} item={item} />
+              ))}
             </div>
-            <div>
-                {(sortBy == "name" || sortBy == "category") &&
-                    itemData.map((item) => <Item key={item.id} itemObj={item} />)}
-                {(sortBy == "group") &&
-                    categoriesOption.map((category) => {
-                        let itemList = itemData.filter((item) => item.category === category.toLowerCase());
-                            if (itemList.length === 0) return null
-                            else 
-                            {
-                                return (
-                                    <div key={category}>
-                                        <h3 className="text-2xl text-orange-600">{category}</h3>
-                                        {itemList.map((item) => <Item key={item.id} itemObj={item} />)}
-                                    </div>
-                                );
-                            }         
-                        })}
-            </div>
-        </section>
-    )
+          ))}
+        {sortBy !== "grouped category" &&
+          itemArray.map((item) => <Item key={item.id} item={item} />)}
+      </div>
+    </section>
+  );
 }
