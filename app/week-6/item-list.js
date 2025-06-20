@@ -1,0 +1,81 @@
+"use client";
+
+import { useState } from "react";
+import Item from "./item";
+import itemData from "./items.json"
+
+export default function ItemList() {
+
+    let categoriesOption = ["Produce", "Dairy", "Bakery", "Meat", "Frozen Foods", "Canned Goods", "Dry Goods", "Beverages", "Snacks", "Household", "Other"];
+    
+    let [sortBy, setSortBy] = useState("name");
+    let buttonNameStyle = "bg-teal-500 text-white p-1 m-2";
+    let buttonCategoryStyle = "bg-slate-400 text-white p-1 m-2";
+    let buttonGroupStyle = "bg-slate-400 text-white p-1 m-2";
+
+    if (sortBy == "name") {
+        buttonNameStyle = "bg-teal-500 text-white p-1 m-2";
+        buttonCategoryStyle = "bg-slate-400 text-white p-1 m-2";
+        buttonGroupStyle = "bg-slate-400 text-white p-1 m-2";
+    };
+    if (sortBy == "category") {
+        buttonNameStyle = "bg-slate-400 text-white p-1 m-2";
+        buttonCategoryStyle = "bg-teal-500 text-white p-1 m-2";
+        buttonGroupStyle = "bg-slate-400 text-white p-1 m-2";
+    };
+    if (sortBy == "group") {
+        buttonNameStyle = "bg-slate-400 text-white p-1 m-2";
+        buttonCategoryStyle = "bg-slate-400 text-white p-1 m-2";
+        buttonGroupStyle = "bg-teal-500 text-white p-1 m-2";
+    };
+
+    const handleSortByName = () => setSortBy("name");
+    const handleSortbyCategory = () => setSortBy("category");
+    const handleSortByGroup = () => setSortBy("group");
+    
+    if (sortBy != "group") 
+        itemData.sort( (a,b) => {
+            let nameA = a[sortBy].toUpperCase();
+            let nameB = b[sortBy].toUpperCase();
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
+        });
+
+    categoriesOption = categoriesOption.sort((a, b) => {
+        let nameA = a.toUpperCase();
+        let nameB = b.toUpperCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+    });
+
+    return(
+        <section>
+            <div>
+                <label className="text-black font-bold">Sort By: </label>
+                <button className={buttonNameStyle} onClick={handleSortByName}>Name</button>
+                <button className={buttonCategoryStyle} onClick={handleSortbyCategory}>Category</button>
+                <button className={buttonGroupStyle} onClick={handleSortByGroup}>Group Category</button>
+            </div>
+            <div>
+                {(sortBy == "name" || sortBy == "category") &&
+                    itemData.map((item) => <Item key={item.id} itemObj={item} />)}
+                {(sortBy == "group") &&
+                    categoriesOption.map((category) => {
+                        let itemList = itemData.filter((item) => item.category === category.toLowerCase());
+                            if (itemList.length === 0) return null
+                            else 
+                            {
+                                return (
+                                    <div key={category}>
+                                        <h3 className="text-2xl text-orange-600">{category}</h3>
+                                        {itemList.map((item) => <Item key={item.id} itemObj={item} />)}
+                                    </div>
+                                );
+                            }         
+                        })}
+            </div>
+        </section>
+    )
+}
