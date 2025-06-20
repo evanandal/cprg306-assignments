@@ -56,7 +56,7 @@ export default function ItemList() {
                 <label className="text-black font-bold">Sort By: </label>
                 <button className={buttonNameStyle} onClick={handleSortByName}>Name</button>
                 <button className={buttonCategoryStyle} onClick={handleSortbyCategory}>Category</button>
-                <button className={buttonGroupStyle} onClick={handleSortByGroup}>Group Category</button>
+                <button className={buttonGroupStyle} onClick={handleSortByGroup}>Grouped Category</button>
             </div>
             <div>
                 {(sortBy == "name" || sortBy == "category") &&
